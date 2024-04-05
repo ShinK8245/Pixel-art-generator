@@ -1,0 +1,83 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: rgb(111, 148, 149);
+}
+
+.wrapper {
+  background-color: rgb(202, 208, 208);
+  width: 80vmin;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  padding: 40px 20px;
+  border-radius: 10px;
+}
+
+label {
+  display: flex;
+}
+
+span {
+  position: relative;
+  font-size: 20px;
+}
+
+.opt-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+button {
+  background-color: rgb(212, 181, 55);
+  border: 1px solid;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  width: 70px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border-radius: 8px;
+  border: 2px solid rgb(79, 77, 72);
+}
+
+input[type="color"]::-moz-color-swatch {
+  border-radius: 8px;
+  border: 2px solid rgb(79, 77, 72);
+}
+
+.gridCol {
+  height: 1em;
+  width: 1em;
+  border: 1px solid rgb(127, 127, 127);
+}
+
+.gridRow {
+  display: flex;
+}
+
+@media only screen and (max-width: 768px) {
+  .gridCol {
+    height: 0.8em;
+    width: 0.8em;
+  }
+}
