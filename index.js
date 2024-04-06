@@ -9,96 +9,69 @@ let paintBtn = document.getElementById("paint-btn");
 let widthValue = document.getElementById("width-value");
 let heightValue = document.getElementById("height-value");
 
-let events = {
-  mouse: {
-    down: "mousedown",
-    move: "mousemove",
-    up: "mouseup",
-  },
-  touch: {
-    down: "touchstart",
-    move: "touchmove",
-    up: "touchend",
-  },
+const events = {
+  down: ["mousedown", "touchstart"],
+  move: ["mousemove", "touchmove"],
+  up: ["mouseup", "touchend", "mouseleave"],
 };
-
-let deviceType = "";
 
 let draw = false;
 let erase = false;
 
-const isTouchDevice = () => {
-  try {
-    document.createEvent("TouchEvent");
-    deviceType = "touch";
-    return true;
-  } catch (e) {
-    deviceType = "mouse";
-    return false;
-  }
-};
-
-isTouchDevice();
-
-const getEventCoordinates = (e) => {
-  if (!isTouchDevice()) {
+const getCoordinates = (e) => {
+  if (e.touches) {
+    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  } else {
     return { x: e.clientX, y: e.clientY };
-  } else {
-    if (e.touches.length > 0) {
-      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    }
-  }
-  return null;
-};
-
-const handleDraw = (col) => {
-  if (erase) {
-    col.style.backgroundColor = "transparent";
-  } else {
-    col.style.backgroundColor = colorButton.value;
   }
 };
 
-gridButton.addEventListener("click", () => {
+const drawOnGrid = (col, eraseMode) => {
+  col.style.backgroundColor = eraseMode ? "transparent" : colorButton.value;
+};
+
+const setupGrid = () => {
   container.innerHTML = "";
-  let count = 0;
   for (let i = 0; i < gridHeight.value; i++) {
-    let div = document.createElement("div");
-    div.classList.add("gridRow");
-
+    let row = document.createElement("div");
+    row.classList.add("gridRow");
     for (let j = 0; j < gridWidth.value; j++) {
-      count++;
       let col = document.createElement("div");
       col.classList.add("gridCol");
-      col.setAttribute("id", `gridCol${count}`);
 
-      col.addEventListener(events[deviceType].down, (e) => {
-        e.preventDefault();
-        handleDraw(col);
+      events.down.forEach((event) => {
+        col.addEventListener(event, (e) => {
+          e.preventDefault();
+          draw = true;
+          drawOnGrid(col, erase);
+        });
       });
 
-      div.appendChild(col);
+      row.appendChild(col);
     }
-
-    container.appendChild(div);
+    container.appendChild(row);
   }
+};
 
-  document.addEventListener(events[deviceType].move, (e) => {
+events.move.forEach((event) => {
+  document.addEventListener(event, (e) => {
     if (!draw) return;
     e.preventDefault();
-    let coordinates = getEventCoordinates(e);
-    if (coordinates) {
-      let element = document.elementFromPoint(coordinates.x, coordinates.y);
-      if (element && element.classList.contains("gridCol")) {
-        handleDraw(element);
-      }
+    const coordinates = getCoordinates(e);
+    const element = document.elementFromPoint(coordinates.x, coordinates.y);
+    if (element && element.classList.contains("gridCol")) {
+      drawOnGrid(element, erase);
     }
   });
+});
 
-  document.addEventListener(events[deviceType].up, () => {
+events.up.forEach((event) => {
+  document.addEventListener(event, () => {
     draw = false;
   });
 });
+
+gridButton.addEventListener("click", setupGrid);
 
 clearGridButton.addEventListener("click", () => {
   container.innerHTML = "";
@@ -113,16 +86,15 @@ paintBtn.addEventListener("click", () => {
 });
 
 gridWidth.addEventListener("input", () => {
-  widthValue.innerHTML =
-    gridWidth.value < 10 ? `0${gridWidth.value}` : gridWidth.value;
+  widthValue.textContent = gridWidth.value.padStart(2, "0");
 });
 
 gridHeight.addEventListener("input", () => {
-  heightValue.innerHTML =
-    gridHeight.value < 10 ? `0${gridHeight.value}` : gridHeight.value;
+  heightValue.textContent = gridHeight.value.padStart(2, "0");
 });
 
 window.onload = () => {
   gridHeight.value = 10;
   gridWidth.value = 10;
+  setupGrid();
 };
