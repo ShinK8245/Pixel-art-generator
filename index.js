@@ -96,5 +96,4 @@ gridHeight.addEventListener("input", () => {
 window.onload = () => {
   gridHeight.value = 10;
   gridWidth.value = 10;
-  setupGrid();
 };
